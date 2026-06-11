@@ -1218,7 +1218,7 @@ function showTooltip(e, h, d) {
 }
 
 // ── MONTH INPUT ─────────────────────────────────────────────────────────
-document.getElementById('monthYear').addEventListener('input', saveAll);
+// Already handled by monthEdit listeners above
 
 // ── UPDATE UI ───────────────────────────────────────────────────────────
 function updateUI() {
@@ -1422,7 +1422,9 @@ try {
   if (!currentMonth) currentMonth = getDateLabel();
   buildHabitsList();
   updateUI();
+  window.__INIT_OK = true;
 } catch (e) {
+  window.__INIT_ERROR = String(e && e.message ? e.message : e);
   console.error('Init error:', e);
   var errDiv = document.createElement('div');
   errDiv.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#c0392b;color:white;padding:15px;z-index:9999;font-size:14px';
