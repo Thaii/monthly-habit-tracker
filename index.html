@@ -42,14 +42,16 @@
 
   .page {
     background: var(--paper);
-    width: 820px;
-    min-height: 600px;
+    width: 100%;
+    max-width: 820px;
+    min-height: 100dvh;
+    min-height: 100vh;
     border-radius: 4px;
     box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3);
-    padding: 30px 36px 28px;
+    padding: 28px 28px 24px;
     position: relative;
     display: grid;
-    grid-template-columns: 1fr 1fr 220px;
+    grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: auto auto 1fr auto;
     gap: 0;
   }
@@ -515,19 +517,23 @@
 
   /* ── RESPONSIVE ── */
   @media (max-width: 860px) {
-    body { padding: 10px; }
+    body { padding: 0; }
     .page {
       width: 100%;
-      padding: 20px 16px 16px;
+      max-width: none;
+      padding: 20px 16px 70px;
+      border-radius: 0;
+      min-height: 100dvh;
       grid-template-columns: 1fr;
-      grid-template-rows: auto auto auto auto auto auto;
+      grid-template-rows: auto auto auto auto auto;
     }
+    .page::before { border-radius: 0; }
     .header { flex-direction: column; align-items: flex-start; gap: 6px; }
     .month-nav-wrap { align-self: stretch; justify-content: center; }
-    .stats-panel { flex-wrap: wrap; gap: 8px 16px; }
+    .stats-panel { flex-wrap: wrap; gap: 6px 12px; font-size: 10px; }
     .habits-col { grid-column: 1; padding-right: 0; }
-    .chart-col { grid-column: 1; padding: 12px 0; }
-    #habit-chart { max-width: 260px; }
+    .chart-col { grid-column: 1; padding: 8px 0; }
+    #habit-chart { max-width: 260px; height: auto; }
     .right-col { grid-column: 1; padding-left: 0; border-left: none; border-top: 1px solid var(--ring); padding-top: 12px; }
     .actions {
       position: fixed;
@@ -543,15 +549,17 @@
     }
     .btn { font-size: 10px; padding: 7px 10px; }
     .toast { bottom: 72px; }
-    .quote-text { max-width: 70%; }
+    .footer { flex-direction: column; gap: 4px; align-items: flex-start; }
+    .quote-text { max-width: 100%; }
+    .title-planning { font-size: 30px; }
   }
 
   @media (max-width: 400px) {
-    .title-planning { font-size: 26px; }
+    .page { padding: 16px 12px 70px; }
+    .title-planning { font-size: 24px; }
     #habit-chart { max-width: 200px; }
     .goals-grid { grid-template-columns: 1fr; }
-    .footer { flex-direction: column; gap: 4px; align-items: flex-start; }
-    .quote-text { max-width: 100%; }
+    .month-display { font-size: 11px; min-width: 90px; }
   }
 
   @media print {
