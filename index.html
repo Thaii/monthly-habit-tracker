@@ -923,14 +923,12 @@ function resetAll(){
   drawChart(); updateStatsUI(); saveAll(); showToast('Days reset');
 }
 function clearAll(){
-  if (!confirm('Clear ALL data for ALL months?\nCannot be undone.')) return;
-  monthStore={}; state=freshState(); habitNames=new Array(HABITS).fill('');
-  obsTexts=freshObs(); goalTexts=freshGoals();
-  currentMonth=getDateLabel(); monthStore[currentMonth]={state,obsTexts:[...obsTexts],goalTexts:[...goalTexts]};
-  buildHabitsList();
+  if (!confirm(`Clear ${currentMonth}?\nResets tracked days, notes and goals for this month only.`)) return;
+  monthStore[currentMonth]={state:freshState(), obsTexts:freshObs(), goalTexts:freshGoals()};
+  loadMonthData(currentMonth);
   document.querySelectorAll('.obs-line').forEach(el=>el.value='');
   document.querySelectorAll('.goal-input').forEach(el=>el.value='');
-  updateUI(); saveAll(); showToast('All data cleared');
+  updateUI(); saveAll(); showToast(`Cleared ${currentMonth}`);
 }
 
 // ── EXPORT / IMPORT ───────────────────────────────────────────────────────
