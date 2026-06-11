@@ -1399,9 +1399,30 @@ function dismissIOSBanner() {
 }
 
 // ── SERVICE WORKER ──────────────────────────────────────────────────────
+// Force-clean any old service workers so users always get the latest page
 if ('serviceWorker' in navigator) {
+  // Unregister all existing service workers first
+  navigator.serviceWorker.getRegistrations().then(regs => {
+    for (let r of regs) { r.unregister(); }
+  });
+  // Then register fresh
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
+    navigator.serviceWorker.register('sw.js').then(reg => {
+      // Auto-skip waiting so updates take effect immediately
+      if (reg.waiting) reg.waiting.postMessage({ action: 'skipWaiting' });
+      reg.addEventListener('updatefound', () => {
+        const w = reg.installing;
+        if (w) w.addEventListener('statechange', () => {
+          if (w.state === 'installed' && navigator.serviceWorker.controller) {
+            w.postMessage({ action: 'skipWaiting' });
+          }
+        });
+      });
+    }).catch(() => {});
+  });
+  // Reload when new SW takes over
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    window.location.reload();
   });
 }
 

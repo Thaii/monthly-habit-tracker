@@ -20,6 +20,13 @@ self.addEventListener('install', e => {
   );
 });
 
+// Listen for skipWaiting message from client
+self.addEventListener('message', e => {
+  if (e.data && e.data.action === 'skipWaiting') {
+    self.skipWaiting();
+  }
+});
+
 // Activate: clean out old caches
 self.addEventListener('activate', e => {
   e.waitUntil(
