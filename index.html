@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#2c2c2c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Habit Tracker">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.svg">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>Monthly Habit Tracker</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f0e8;
+    --paper: #fffdf8;
+    --ink: #1a1a1a;
+    --ink-light: #555;
+    --green: #4a9b6f;
+    --green-light: #6dbe8d;
+    --red: #c0392b;
+    --red-light: #e74c3c;
+    --empty: #e8e2d8;
+    --ring: #ccc8c0;
+    --accent: #2c3e50;
+  }
+
+  body {
+    background: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 20px;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .page {
+    background: var(--paper);
+    width: 820px;
+    min-height: 600px;
+    border-radius: 4px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3);
+    padding: 36px 40px 32px;
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr 220px;
+    grid-template-rows: auto 1fr auto;
+    gap: 0;
+  }
+
+  /* Aged paper texture */
+  .page::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 4px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 10px;
+    margin-bottom: 24px;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+  }
+
+  .title-monthly {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+  }
+
+  .title-planning {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 38px;
+    letter-spacing: 0.05em;
+    color: var(--ink);
+    line-height: 1;
+  }
+
+  .month-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .month-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+  }
+
+  .month-input {
+    background: transparent;
+    border: none;
+    border-bottom: 1.5px solid var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+    padding: 2px 4px;
+    width: 160px;
+    outline: none;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  /* ── LEFT COLUMN: habits list ── */
+  .habits-col {
+    grid-column: 1;
+    padding-right: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-top: 8px;
+  }
+
+  .habits-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 0.15em;
+    color: var(--ink);
+    margin-bottom: 14px;
+  }
+
+  .habits-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .habit-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .habit-num {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--ink-light);
+    width: 14px;
+    flex-shrink: 0;
+  }
+
+  .habit-color-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 1.5px solid rgba(0,0,0,0.15);
+  }
+
+  .habit-input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--ring);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--ink);
+    padding: 2px 0;
+    flex: 1;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .habit-input:focus { border-color: var(--green); }
+
+  /* Color swatches */
+  .legend {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .legend-title {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 4px;
+  }
+
+  .legend-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--ink-light);
+  }
+
+  .legend-swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    border: 1px solid rgba(0,0,0,0.1);
+  }
+
+  .instructions {
+    margin-top: 20px;
+    font-size: 10px;
+    color: var(--ink-light);
+    line-height: 1.6;
+  }
+
+  /* ── CENTRE: radial chart ── */
+  .chart-col {
+    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  #habit-chart {
+    cursor: pointer;
+    user-select: none;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .day-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 9.5px;
+    fill: var(--ink-light);
+    font-weight: 500;
+  }
+
+  /* ── RIGHT COLUMN: observations + goals ── */
+  .right-col {
+    grid-column: 3;
+    padding-left: 24px;
+    border-left: 1px solid var(--ring);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-top: 8px;
+  }
+
+  .panel-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 15px;
+    letter-spacing: 0.15em;
+    color: var(--paper);
+    background: var(--ink);
+    padding: 5px 10px 3px;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .obs-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .obs-line {
+    border: none;
+    border-bottom: 1px solid var(--ring);
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    color: var(--ink);
+    padding: 10px 4px 4px;
+    outline: none;
+    width: 100%;
+    resize: none;
+    height: 36px;
+    overflow: hidden;
+  }
+
+  .goals-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .goal-cell {
+    border: 1px solid var(--ring);
+    padding: 6px;
+    min-height: 44px;
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .goal-input {
+    background: transparent;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    color: var(--ink);
+    width: 100%;
+    outline: none;
+    resize: none;
+    height: 32px;
+  }
+
+  /* ── FOOTER quote ── */
+  .footer {
+    grid-column: 1 / -1;
+    border-top: 1px solid var(--ring);
+    margin-top: 20px;
+    padding-top: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .quote-text {
+    font-size: 10px;
+    color: var(--ink-light);
+    font-style: italic;
+    max-width: 480px;
+    line-height: 1.5;
+  }
+
+  .discipline-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.2em;
+    color: var(--ink);
+  }
+
+  /* Action buttons (bottom-right) */
+  .actions {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    gap: 8px;
+    z-index: 100;
+  }
+
+  .btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+
+  .btn:hover { opacity: 0.85; transform: translateY(-1px); }
+  .btn-print { background: var(--green); color: white; }
+  .btn-reset { background: #555; color: white; }
+  .btn-install { background: var(--accent); color: white; }
+  .btn-clear { background: var(--red); color: white; }
+
+  /* Toast notification */
+  .toast {
+    position: fixed;
+    bottom: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(26,26,26,0.9);
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    padding: 8px 18px;
+    border-radius: 20px;
+    z-index: 300;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; }
+
+  /* Tooltip */
+  .tooltip {
+    position: fixed;
+    background: rgba(26,26,26,0.9);
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    pointer-events: none;
+    display: none;
+    z-index: 200;
+  }
+
+  /* Install banner for iOS */
+  .ios-install-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 12px 16px;
+    font-size: 13px;
+    z-index: 400;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  }
+  .ios-install-banner.show { display: flex; }
+  .ios-install-banner .btn-close-banner {
+    background: none;
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 2px 10px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 860px) {
+    body { padding: 10px; }
+    .page {
+      width: 100%;
+      padding: 24px 20px 20px;
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto auto auto auto;
+    }
+    .header { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .month-input-wrap { align-self: stretch; }
+    .month-input { width: 100%; text-align: left; }
+    .habits-col { grid-column: 1; padding-right: 0; }
+    .chart-col { grid-column: 1; padding: 16px 0; }
+    #habit-chart { max-width: 280px; }
+    .right-col { grid-column: 1; padding-left: 0; border-left: none; border-top: 1px solid var(--ring); padding-top: 16px; }
+    .actions {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 10px;
+      background: rgba(44,44,44,0.95);
+      gap: 6px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    .btn { font-size: 11px; padding: 8px 12px; }
+    .toast { bottom: 80px; }
+    .quote-text { max-width: 70%; }
+  }
+
+  @media (max-width: 400px) {
+    .title-planning { font-size: 28px; }
+    #habit-chart { max-width: 220px; }
+    .goals-grid { grid-template-columns: 1fr; }
+    .footer { flex-direction: column; gap: 6px; align-items: flex-start; }
+    .quote-text { max-width: 100%; }
+  }
+
+  @media print {
+    body { background: white; padding: 0; }
+    .page { box-shadow: none; width: 100%; }
+    .actions, .tooltip, .toast, .ios-install-banner { display: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div>
+        <div class="title-monthly">Monthly</div>
+        <div class="title-planning">Planning</div>
+      </div>
+    </div>
+    <div class="month-input-wrap">
+      <span class="month-label">Month / Year</span>
+      <input class="month-input" id="monthYear" type="text" placeholder="June 2026">
+    </div>
+  </div>
+
+  <!-- LEFT: Habits -->
+  <div class="habits-col">
+    <div class="habits-title">Habits:</div>
+    <ul class="habits-list" id="habitsList"></ul>
+
+    <div class="legend">
+      <div class="legend-title">Key</div>
+      <div class="legend-row">
+        <div class="legend-swatch" style="background:#4a9b6f"></div> Completed
+      </div>
+      <div class="legend-row">
+        <div class="legend-swatch" style="background:#c0392b"></div> Missed
+      </div>
+      <div class="legend-row">
+        <div class="legend-swatch" style="background:#e8e2d8; border:1px solid #ccc"></div> Not tracked
+      </div>
+    </div>
+
+    <div class="instructions">
+      Tap a cell to cycle:<br>
+      empty → done → missed → empty<br><br>
+      Each ring = one habit.<br>
+      Each arc segment = one day.
+    </div>
+  </div>
+
+  <!-- CENTRE: Radial chart -->
+  <div class="chart-col">
+    <svg id="habit-chart" width="300" height="300" viewBox="-150 -150 300 300"></svg>
+  </div>
+
+  <!-- RIGHT: Observations + Goals -->
+  <div class="right-col">
+    <div>
+      <span class="panel-title">Observations</span>
+      <div class="obs-lines">
+        <textarea class="obs-line" data-obs="0" placeholder="Week 1 notes…"></textarea>
+        <textarea class="obs-line" data-obs="1" placeholder="Week 2 notes…"></textarea>
+        <textarea class="obs-line" data-obs="2" placeholder="Week 3 notes…"></textarea>
+        <textarea class="obs-line" data-obs="3" placeholder="Week 4 notes…"></textarea>
+        <textarea class="obs-line" data-obs="4" placeholder="Reflections…"></textarea>
+      </div>
+    </div>
+    <div>
+      <span class="panel-title">Key Goals</span>
+      <div class="goals-grid">
+        <div class="goal-cell"><textarea class="goal-input" data-goal="0" placeholder="Goal 1"></textarea></div>
+        <div class="goal-cell"><textarea class="goal-input" data-goal="1" placeholder="Goal 2"></textarea></div>
+        <div class="goal-cell"><textarea class="goal-input" data-goal="2" placeholder="Goal 3"></textarea></div>
+        <div class="goal-cell"><textarea class="goal-input" data-goal="3" placeholder="Goal 4"></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="quote-text">
+      "Discipline doesn't care how you feel. Discipline is doing what needs to be done, even when you don't feel like doing it."
+    </div>
+    <div class="discipline-label">Discipline.</div>
+  </div>
+
+</div>
+
+<!-- Tooltip -->
+<div class="tooltip" id="tooltip"></div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- iOS install banner -->
+<div class="ios-install-banner" id="iosInstallBanner">
+  <span>📱 Install this app: tap <strong>Share</strong> → <strong>Add to Home Screen</strong></span>
+  <button class="btn-close-banner" onclick="dismissIOSBanner()">✕</button>
+</div>
+
+<!-- Action buttons -->
+<div class="actions" id="actions">
+  <button class="btn btn-install" id="installBtn" style="display:none" onclick="installApp()">📲 Install App</button>
+  <button class="btn btn-clear" onclick="clearAll()">Clear</button>
+  <button class="btn btn-reset" onclick="resetAll()">Reset</button>
+  <button class="btn btn-print" onclick="window.print()">Print</button>
+</div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────────────────
+const HABITS = 8;
+const DAYS   = 31;
+const INNER  = 40;
+const RING_W = 12;
+const GAP    = 1.5;
+
+const HABIT_COLORS = [
+  '#4a9b6f','#2980b9','#8e44ad','#e67e22','#16a085','#c0392b','#d4ac0d','#1a5276'
+];
+
+const HABIT_NAMES_DEFAULT = [
+  'No Smoke','Jogging','Trotar','Drink 2L water','','','',''
+];
+
+const STORAGE_KEY = 'habit-tracker-state';
+
+// ── STATE ───────────────────────────────────────────────────────────────
+let state;
+let habitNames;
+let obsTexts  = ['', '', '', '', ''];
+let goalTexts = ['', '', '', '', ''];
+
+function freshState() {
+  return Array.from({length: HABITS}, () => new Array(DAYS).fill(0));
+}
+
+// ── LOCALSTORAGE ────────────────────────────────────────────────────────
+function saveState() {
+  try {
+    const data = {
+      state,
+      habitNames,
+      obsTexts,
+      goalTexts,
+      monthYear: document.getElementById('monthYear').value
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch (e) { /* storage full or unavailable — ignore silently */ }
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    // Validate & restore state
+    if (data.state && data.state.length === HABITS && data.state[0].length === DAYS) {
+      state = data.state;
+    }
+    if (data.habitNames && data.habitNames.length === HABITS) {
+      habitNames = data.habitNames;
+    }
+    if (data.obsTexts) obsTexts = data.obsTexts;
+    if (data.goalTexts) goalTexts = data.goalTexts;
+    if (data.monthYear) document.getElementById('monthYear').value = data.monthYear;
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+// ── TOAST ────────────────────────────────────────────────────────────────
+let toastTimer;
+
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2000);
+}
+
+// ── BUILD HABIT LIST ────────────────────────────────────────────────────
+const listEl = document.getElementById('habitsList');
+
+function buildHabitsList() {
+  listEl.innerHTML = '';
+  for (let h = 0; h < HABITS; h++) {
+    const li = document.createElement('li');
+    li.className = 'habit-item';
+    li.innerHTML = `
+      <span class="habit-num">${h+1}.</span>
+      <div class="habit-color-dot" style="background:${HABIT_COLORS[h]}"></div>
+      <input class="habit-input" type="text" placeholder="Habit ${h+1}" value="${escapeHtml(habitNames[h])}" data-h="${h}">
+    `;
+    listEl.appendChild(li);
+  }
+}
+
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+listEl.addEventListener('input', e => {
+  if (e.target.dataset.h !== undefined) {
+    habitNames[+e.target.dataset.h] = e.target.value;
+    saveState();
+  }
+});
+
+// ── OBSERVATIONS + GOALS PERSISTENCE ────────────────────────────────────
+document.querySelectorAll('.obs-line').forEach(el => {
+  const idx = +el.dataset.obs;
+  el.value = obsTexts[idx] || '';
+  el.addEventListener('input', () => {
+    obsTexts[idx] = el.value;
+    saveState();
+  });
+});
+
+document.querySelectorAll('.goal-input').forEach(el => {
+  const idx = +el.dataset.goal;
+  el.value = goalTexts[idx] || '';
+  el.addEventListener('input', () => {
+    goalTexts[idx] = el.value;
+    saveState();
+  });
+});
+
+// ── DRAW SVG ────────────────────────────────────────────────────────────
+const svg = document.getElementById('habit-chart');
+const NS  = 'http://www.w3.org/2000/svg';
+
+const START_DEG  = -90;
+const TOTAL_DEG  = 330;
+const DEG_PER_DAY = TOTAL_DEG / DAYS;
+
+function deg2rad(d) { return d * Math.PI / 180; }
+
+function arcPath(innerR, outerR, startDeg, endDeg) {
+  const s1 = deg2rad(startDeg), e1 = deg2rad(endDeg);
+  const large = (endDeg - startDeg) > 180 ? 1 : 0;
+  const x1 = Math.cos(s1), y1 = Math.sin(s1);
+  const x2 = Math.cos(e1), y2 = Math.sin(e1);
+  return [
+    `M ${innerR*x1} ${innerR*y1}`,
+    `A ${innerR} ${innerR} 0 ${large} 1 ${innerR*x2} ${innerR*y2}`,
+    `L ${outerR*x2} ${outerR*y2}`,
+    `A ${outerR} ${outerR} 0 ${large} 0 ${outerR*x1} ${outerR*y1}`,
+    'Z'
+  ].join(' ');
+}
+
+const cellPaths = [];
+
+function cellColor(h, d) {
+  const v = state[h][d];
+  if (v === 1) return HABIT_COLORS[h];
+  if (v === 2) return '#c0392b';
+  return '#e8e2d8';
+}
+
+function drawChart() {
+  svg.innerHTML = '';
+
+  const bgCircle = document.createElementNS(NS, 'circle');
+  bgCircle.setAttribute('r', INNER - 4);
+  bgCircle.setAttribute('fill', '#f5f0e8');
+  svg.appendChild(bgCircle);
+
+  const cLabel = document.createElementNS(NS, 'text');
+  cLabel.setAttribute('text-anchor', 'middle');
+  cLabel.setAttribute('dy', '0.35em');
+  cLabel.setAttribute('font-family', 'Bebas Neue, sans-serif');
+  cLabel.setAttribute('font-size', '9');
+  cLabel.setAttribute('letter-spacing', '1');
+  cLabel.setAttribute('fill', '#888');
+  cLabel.textContent = 'HABITS';
+  svg.appendChild(cLabel);
+
+  for (let h = 0; h < HABITS; h++) {
+    const innerR = INNER + h * (RING_W + GAP);
+    const outerR = innerR + RING_W;
+    cellPaths[h] = [];
+
+    for (let d = 0; d < DAYS; d++) {
+      const startDeg = START_DEG + d * DEG_PER_DAY + 0.5;
+      const endDeg   = START_DEG + (d + 1) * DEG_PER_DAY - 0.5;
+
+      const path = document.createElementNS(NS, 'path');
+      path.setAttribute('d', arcPath(innerR, outerR, startDeg, endDeg));
+      path.setAttribute('fill', cellColor(h, d));
+      path.setAttribute('stroke', '#fffdf8');
+      path.setAttribute('stroke-width', '0.8');
+      path.style.transition = 'fill 0.15s';
+      path.dataset.h = h;
+      path.dataset.d = d;
+      svg.appendChild(path);
+      cellPaths[h][d] = path;
+    }
+
+    const midGap = deg2rad(START_DEG + TOTAL_DEG + 15);
+    const midR   = (innerR + outerR) / 2;
+    const rLabel = document.createElementNS(NS, 'text');
+    rLabel.setAttribute('x', midR * Math.cos(midGap));
+    rLabel.setAttribute('y', midR * Math.sin(midGap));
+    rLabel.setAttribute('text-anchor', 'middle');
+    rLabel.setAttribute('dominant-baseline', 'middle');
+    rLabel.setAttribute('font-family', 'DM Sans, sans-serif');
+    rLabel.setAttribute('font-size', '7');
+    rLabel.setAttribute('font-weight', '600');
+    rLabel.setAttribute('fill', HABIT_COLORS[h]);
+    rLabel.textContent = h + 1;
+    svg.appendChild(rLabel);
+  }
+
+  const outermost = INNER + HABITS * (RING_W + GAP) + 4;
+  for (let d = 0; d < DAYS; d++) {
+    const midDeg = START_DEG + (d + 0.5) * DEG_PER_DAY;
+    const rad    = deg2rad(midDeg);
+    const lx     = outermost * Math.cos(rad);
+    const ly     = outermost * Math.sin(rad);
+
+    if ((d + 1) % 2 !== 0 && d !== 0 && d !== DAYS - 1) continue;
+
+    const t = document.createElementNS(NS, 'text');
+    t.setAttribute('x', lx);
+    t.setAttribute('y', ly);
+    t.setAttribute('text-anchor', 'middle');
+    t.setAttribute('dominant-baseline', 'middle');
+    t.setAttribute('font-family', 'DM Sans, sans-serif');
+    t.setAttribute('font-size', '7.5');
+    t.setAttribute('fill', '#999');
+    t.textContent = d + 1;
+    svg.appendChild(t);
+  }
+}
+
+// ── INTERACTIONS ────────────────────────────────────────────────────────
+const tooltip = document.getElementById('tooltip');
+
+svg.addEventListener('click', e => {
+  const path = e.target.closest('path[data-h]');
+  if (!path) return;
+  const h = +path.dataset.h, d = +path.dataset.d;
+  state[h][d] = (state[h][d] + 1) % 3;
+  path.setAttribute('fill', cellColor(h, d));
+  saveState();
+  showTooltip(e, h, d);
+});
+
+svg.addEventListener('mousemove', e => {
+  const path = e.target.closest('path[data-h]');
+  if (!path) { tooltip.style.display = 'none'; return; }
+  showTooltip(e, +path.dataset.h, +path.dataset.d);
+});
+
+svg.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+
+function showTooltip(e, h, d) {
+  const stateLbl = ['—', '✓ Done', '✗ Missed'][state[h][d]];
+  const name = habitNames[h] || `Habit ${h+1}`;
+  tooltip.textContent = `Day ${d+1} · ${name} · ${stateLbl}`;
+  tooltip.style.display = 'block';
+  tooltip.style.left = (e.clientX + 12) + 'px';
+  tooltip.style.top  = (e.clientY - 28) + 'px';
+}
+
+// ── MONTH INPUT ─────────────────────────────────────────────────────────
+document.getElementById('monthYear').addEventListener('input', saveState);
+
+// ── RESET / CLEAR ───────────────────────────────────────────────────────
+function resetAll() {
+  if (!confirm('Reset all tracked days for this month? (Observations and goals will be kept)')) return;
+  state = freshState();
+  drawChart();
+  saveState();
+  showToast('Days reset');
+}
+
+function clearAll() {
+  if (!confirm('Clear ALL data including habits, observations, and goals?')) return;
+  state = freshState();
+  habitNames = [...HABIT_NAMES_DEFAULT];
+  obsTexts  = ['', '', '', '', ''];
+  goalTexts = ['', '', '', '', ''];
+  buildHabitsList();
+  document.querySelectorAll('.obs-line').forEach(el => { el.value = ''; });
+  document.querySelectorAll('.goal-input').forEach(el => { el.value = ''; });
+  document.getElementById('monthYear').value =
+    new Date().toLocaleDateString('en-AU', { month: 'long', year: 'numeric' });
+  drawChart();
+  saveState();
+  showToast('All data cleared');
+}
+
+// ── INSTALL PROMPT (Android/PWA) ────────────────────────────────────────
+let installPrompt = null;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  installPrompt = e;
+  document.getElementById('installBtn').style.display = 'inline-block';
+});
+
+function installApp() {
+  if (!installPrompt) return;
+  installPrompt.prompt();
+  installPrompt.userChoice.then(result => {
+    if (result.outcome === 'accepted') {
+      document.getElementById('installBtn').style.display = 'none';
+    }
+    installPrompt = null;
+  });
+}
+
+// ── iOS install banner ──────────────────────────────────────────────────
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+const isStandalone = window.navigator.standalone;
+const bannerDismissed = localStorage.getItem('ios-banner-dismissed');
+
+if (isIOS && !isStandalone && !bannerDismissed) {
+  document.getElementById('iosInstallBanner').classList.add('show');
+}
+
+function dismissIOSBanner() {
+  document.getElementById('iosInstallBanner').classList.remove('show');
+  localStorage.setItem('ios-banner-dismissed', '1');
+}
+
+// ── SERVICE WORKER REGISTRATION ─────────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+
+// ── INIT ────────────────────────────────────────────────────────────────
+// Try to load saved state; fall back to defaults
+state = freshState();
+habitNames = [...HABIT_NAMES_DEFAULT];
+
+if (!loadState()) {
+  // No saved data — fresh start with today's date
+  document.getElementById('monthYear').value =
+    new Date().toLocaleDateString('en-AU', { month: 'long', year: 'numeric' });
+}
+
+buildHabitsList();
+drawChart();
+
+// Re-save observations/goals month values from the loaded state
+document.querySelectorAll('.obs-line').forEach(el => {
+  const idx = +el.dataset.obs;
+  el.value = obsTexts[idx] || '';
+});
+document.querySelectorAll('.goal-input').forEach(el => {
+  const idx = +el.dataset.goal;
+  el.value = goalTexts[idx] || '';
+});
+</script>
+</body>
+</html>
