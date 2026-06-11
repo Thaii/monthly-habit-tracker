@@ -430,19 +430,55 @@ body {
    PRINT
 ═══════════════════════════════════════════════ */
 @media print {
+  @page { margin: 12mm; size: A4 portrait; }
+
   body { background: white; padding: 0; }
+
   .page {
-    box-shadow: none; max-width: none; border-radius: 0;
-    grid-template-columns: minmax(170px,1fr) minmax(0,2.8fr) minmax(170px,1fr);
+    box-shadow: none; max-width: 100%; border-radius: 0; width: 100%;
+    grid-template-columns: 1.2fr 2.6fr 1.2fr;
     grid-template-areas:
       "header header header"
       "stats  stats  stats"
       "habits chart  notes"
       "footer footer footer";
-    padding-bottom: 0;
+    padding: 0 8px 8px;
+    min-height: auto;
   }
-  .actions, .tooltip, .toast { display: none !important; }
-  .header { position: static; }
+  .page::before { display: none; }
+
+  .header {
+    position: static; padding: 6px 10px 6px; border-bottom-width: 1.5px;
+  }
+  .title-planning { font-size: 30px; }
+  .stats-panel { padding: 4px 10px 6px; font-size: 10px; min-height: 26px; }
+
+  .habits-col { padding: 10px 10px 10px 14px; }
+  .habits-title { font-size: 16px; margin-bottom: 10px; }
+  .habits-list { gap: 7px; }
+  .habit-input { font-size: 11px; }
+  .legend { margin-top: 12px; }
+  .how-to { margin-top: 8px; }
+
+  .chart-col { padding: 10px; }
+  #habit-chart { max-width: 100%; width: auto; height: 280px; }
+  .ring-legend { max-width: 100%; margin-top: 8px; padding: 6px 8px; gap: 3px 10px; }
+  .ring-legend-name { font-size: 9px; }
+  .ring-legend-pct { font-size: 8.5px; min-width: 20px; }
+  .chart-streak-summary { margin-top: 4px; font-size: 9px; gap: 6px; }
+
+  .right-col { padding: 10px 14px 10px 10px; gap: 12px; }
+  .panel-title { font-size: 12px; padding: 4px 8px 2px; margin-bottom: 6px; }
+  .obs-line { font-size: 10px; padding: 5px 2px 2px; height: 26px; }
+  .goal-input { font-size: 10px; height: 24px; }
+  .goals-grid { gap: 4px; }
+  .goal-cell { min-height: 32px; padding: 4px; }
+
+  .footer { padding: 6px 10px 8px; }
+  .quote-text { font-size: 8.5px; max-width: 70%; }
+
+  .actions, .tooltip, .toast, .install-btn-wrap, .data-wrap, .btn-install, .btn-data,
+  .data-dropdown { display: none !important; }
 }
 </style>
 </head>
