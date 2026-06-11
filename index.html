@@ -1427,24 +1427,36 @@ if ('serviceWorker' in navigator) {
 }
 
 // ── INIT ────────────────────────────────────────────────────────────────
+console.log('INIT START');
 try {
+  console.log('loadAll result:', !loadAll());
   if (!loadAll()) {
+    console.log('Setting fresh state');
     currentMonth = getDateLabel();
     habitNames = [...HABIT_NAMES_DEFAULT];
     state = freshState();
     obsTexts = ['', '', '', '', ''];
     goalTexts = ['', '', '', '', ''];
     monthStore[currentMonth] = { state, obsTexts: [...obsTexts], goalTexts: [...goalTexts] };
+    console.log('Fresh state set, month:', currentMonth);
   }
-  if (!state) state = freshState();
-  if (!currentMonth) currentMonth = getDateLabel();
+  if (!state) { console.log('state was falsy, creating fresh'); state = freshState(); }
+  if (!currentMonth) { console.log('month was falsy, setting'); currentMonth = getDateLabel(); }
+  console.log('Building habits list');
   buildHabitsList();
+  console.log('Updating UI');
   updateUI();
+  console.log('INIT DONE');
 } catch (e) {
-  var errDiv = document.createElement('div');
-  errDiv.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#c0392b;color:white;padding:15px;z-index:9999;font-size:14px;font-family:sans-serif;white-space:pre-wrap';
-  errDiv.textContent = 'Error: ' + (e.message || e) + '\\n' + (e.stack || '');
-  document.body.appendChild(errDiv);
+  console.error('INIT ERROR:', e, e && e.message, e && e.stack);
+  try {
+    var errDiv = document.createElement('div');
+    errDiv.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#c0392b;color:white;padding:15px;z-index:9999;font-size:14px;font-family:sans-serif;white-space:pre-wrap';
+    errDiv.textContent = 'Error: ' + String(e && e.message ? e.message : e);
+    document.body.appendChild(errDiv);
+  } catch(e2) {
+    console.error('Error div failed:', e2);
+  }
 }
 </script>
 </body>
