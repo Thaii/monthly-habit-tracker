@@ -553,17 +553,16 @@ body {
 
 <script>
 // ── CONFIG ────────────────────────────────────────────────────────────────
-const HABITS = 8;
+const HABITS = 5;
 const DAYS   = 31;
 const INNER  = 44;
 const RING_W = 15;
 const GAP    = 2;
 
 const HABIT_COLORS = [
-  '#4a9b6f','#2980b9','#8e44ad','#e67e22',
-  '#16a085','#c0392b','#d4ac0d','#1a5276'
+  '#4a9b6f','#2980b9','#8e44ad','#e67e22','#16a085'
 ];
-const HABIT_NAMES_DEFAULT = ['No Smoke','Jogging','Trotar','Drink 2L water','','','',''];
+const HABIT_NAMES_DEFAULT = ['No Smoke','Jogging','Trotar','Drink 2L water',''];
 const STORAGE_KEY = 'habit-tracker-state';
 
 // ── STATE ─────────────────────────────────────────────────────────────────
@@ -595,6 +594,11 @@ function loadMonthData(key) {
   const md = monthStore[key];
   if (md && md.state && md.state.length===HABITS && md.state[0].length===DAYS) {
     state     = md.state;
+    obsTexts  = md.obsTexts  ? [...md.obsTexts]  : freshObs();
+    goalTexts = md.goalTexts ? [...md.goalTexts] : freshGoals();
+  } else if (md && md.state && md.state.length > HABITS) {
+    // Migration: trim from more habits down to HABITS
+    state     = md.state.slice(0, HABITS).map(row => row.slice(0, DAYS));
     obsTexts  = md.obsTexts  ? [...md.obsTexts]  : freshObs();
     goalTexts = md.goalTexts ? [...md.goalTexts] : freshGoals();
   } else {
