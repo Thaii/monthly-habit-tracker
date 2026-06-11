@@ -26,6 +26,7 @@
     --empty: #e8e2d8;
     --ring: #ccc8c0;
     --accent: #2c3e50;
+    --gold: #d4ac0d;
   }
 
   body {
@@ -45,11 +46,11 @@
     min-height: 600px;
     border-radius: 4px;
     box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3);
-    padding: 36px 40px 32px;
+    padding: 30px 36px 28px;
     position: relative;
     display: grid;
     grid-template-columns: 1fr 1fr 220px;
-    grid-template-rows: auto 1fr auto;
+    grid-template-rows: auto auto 1fr auto;
     gap: 0;
   }
 
@@ -71,8 +72,8 @@
     align-items: baseline;
     justify-content: space-between;
     border-bottom: 2px solid var(--ink);
-    padding-bottom: 10px;
-    margin-bottom: 24px;
+    padding-bottom: 8px;
+    margin-bottom: 16px;
   }
 
   .header-left {
@@ -98,42 +99,100 @@
     line-height: 1;
   }
 
-  .month-input-wrap {
+  /* ── MONTH NAV ── */
+  .month-nav-wrap {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
   }
 
-  .month-label {
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
+  .month-nav-btn {
+    background: none;
+    border: 1px solid var(--ring);
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    padding: 4px 8px;
     color: var(--ink-light);
+    transition: background 0.15s, color 0.15s;
+    user-select: none;
+  }
+  .month-nav-btn:hover { background: var(--empty); color: var(--ink); }
+  .month-nav-btn:active { transform: scale(0.95); }
+
+  .month-display {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    min-width: 120px;
+    text-align: center;
+    user-select: none;
   }
 
-  .month-input {
+  .month-input-edit {
     background: transparent;
     border: none;
     border-bottom: 1.5px solid var(--ink);
     font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 13px;
+    font-weight: 600;
     color: var(--ink);
-    padding: 2px 4px;
-    width: 160px;
+    padding: 1px 4px;
+    width: 130px;
     outline: none;
     text-align: center;
-    cursor: pointer;
+    display: none;
   }
 
-  /* ── LEFT COLUMN: habits list ── */
+  /* ── STATS PANEL ── */
+  .stats-panel {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 8px 0 12px;
+    border-bottom: 1px solid var(--ring);
+    margin-bottom: 12px;
+    font-size: 11px;
+    color: var(--ink-light);
+    min-height: 32px;
+  }
+  .stats-panel:empty { display: none; }
+
+  .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .stat-icon { font-size: 13px; }
+  .stat-value { font-weight: 600; color: var(--ink); }
+  .stat-value.green { color: var(--green); }
+  .stat-value.red { color: var(--red); }
+  .stat-value.gold { color: var(--gold); }
+
+  .stat-habit-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    margin-right: 3px;
+  }
+  .stat-break {
+    font-size: 10px;
+    color: var(--ring);
+    user-select: none;
+  }
+
+  /* ── LEFT COLUMN ── */
   .habits-col {
     grid-column: 1;
-    padding-right: 24px;
+    padding-right: 20px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    padding-top: 8px;
+    padding-top: 4px;
   }
 
   .habits-title {
@@ -141,20 +200,20 @@
     font-size: 20px;
     letter-spacing: 0.15em;
     color: var(--ink);
-    margin-bottom: 14px;
+    margin-bottom: 12px;
   }
 
   .habits-list {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 9px;
   }
 
   .habit-item {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 7px;
   }
 
   .habit-num {
@@ -185,15 +244,22 @@
     outline: none;
     transition: border-color 0.2s;
   }
-
   .habit-input:focus { border-color: var(--green); }
 
-  /* Color swatches */
+  /* Streak badge on habit items */
+  .habit-streak-badge {
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--green);
+    white-space: nowrap;
+    opacity: 0.7;
+  }
+
   .legend {
-    margin-top: 24px;
+    margin-top: 16px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 5px;
   }
 
   .legend-title {
@@ -201,7 +267,7 @@
     letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--ink-light);
-    margin-bottom: 4px;
+    margin-bottom: 2px;
   }
 
   .legend-row {
@@ -219,11 +285,12 @@
     border: 1px solid rgba(0,0,0,0.1);
   }
 
-  .instructions {
-    margin-top: 20px;
+  .how-to {
+    margin-top: 16px;
     font-size: 10px;
     color: var(--ink-light);
     line-height: 1.6;
+    opacity: 0.7;
   }
 
   /* ── CENTRE: radial chart ── */
@@ -243,22 +310,25 @@
     height: auto;
   }
 
-  .day-label {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 9.5px;
-    fill: var(--ink-light);
-    font-weight: 500;
+  .chart-streak-summary {
+    display: flex;
+    gap: 12px;
+    margin-top: 6px;
+    font-size: 10px;
+    color: var(--ink-light);
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
-  /* ── RIGHT COLUMN: observations + goals ── */
+  /* ── RIGHT COLUMN ── */
   .right-col {
     grid-column: 3;
-    padding-left: 24px;
+    padding-left: 20px;
     border-left: 1px solid var(--ring);
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    padding-top: 8px;
+    gap: 16px;
+    padding-top: 4px;
   }
 
   .panel-title {
@@ -269,7 +339,7 @@
     background: var(--ink);
     padding: 5px 10px 3px;
     display: block;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
 
   .obs-lines {
@@ -285,24 +355,24 @@
     font-family: 'DM Sans', sans-serif;
     font-size: 12px;
     color: var(--ink);
-    padding: 10px 4px 4px;
+    padding: 8px 4px 4px;
     outline: none;
     width: 100%;
     resize: none;
-    height: 36px;
+    height: 32px;
     overflow: hidden;
   }
 
   .goals-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 6px;
+    gap: 5px;
   }
 
   .goal-cell {
     border: 1px solid var(--ring);
-    padding: 6px;
-    min-height: 44px;
+    padding: 5px;
+    min-height: 40px;
     display: flex;
     align-items: flex-start;
   }
@@ -316,15 +386,15 @@
     width: 100%;
     outline: none;
     resize: none;
-    height: 32px;
+    height: 28px;
   }
 
-  /* ── FOOTER quote ── */
+  /* ── FOOTER ── */
   .footer {
     grid-column: 1 / -1;
     border-top: 1px solid var(--ring);
-    margin-top: 20px;
-    padding-top: 12px;
+    margin-top: 14px;
+    padding-top: 10px;
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
@@ -345,42 +415,45 @@
     color: var(--ink);
   }
 
-  /* Action buttons (bottom-right) */
+  /* ── ACTION BUTTONS ── */
   .actions {
     position: fixed;
     bottom: 20px;
     right: 20px;
     display: flex;
-    gap: 8px;
+    gap: 6px;
     z-index: 100;
   }
 
   .btn {
     font-family: 'DM Sans', sans-serif;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    padding: 8px 16px;
+    padding: 7px 14px;
     border: none;
     border-radius: 3px;
     cursor: pointer;
     transition: opacity 0.2s, transform 0.1s;
   }
-
   .btn:hover { opacity: 0.85; transform: translateY(-1px); }
-  .btn-print { background: var(--green); color: white; }
-  .btn-reset { background: #555; color: white; }
-  .btn-install { background: var(--accent); color: white; }
-  .btn-clear { background: var(--red); color: white; }
+  .btn:active { transform: translateY(0); }
 
-  /* Toast notification */
+  .btn-print   { background: var(--green); color: white; }
+  .btn-reset   { background: #777; color: white; }
+  .btn-install { background: var(--accent); color: white; }
+  .btn-clear   { background: var(--red); color: white; }
+  .btn-export  { background: var(--ink); color: white; }
+  .btn-import  { background: #666; color: white; }
+
+  /* ── TOAST ── */
   .toast {
     position: fixed;
     bottom: 70px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(26,26,26,0.9);
+    background: rgba(26,26,26,0.92);
     color: white;
     font-family: 'DM Sans', sans-serif;
     font-size: 12px;
@@ -394,10 +467,10 @@
   }
   .toast.show { opacity: 1; }
 
-  /* Tooltip */
+  /* ── TOOLTIP ── */
   .tooltip {
     position: fixed;
-    background: rgba(26,26,26,0.9);
+    background: rgba(26,26,26,0.92);
     color: white;
     font-family: 'DM Sans', sans-serif;
     font-size: 11px;
@@ -408,7 +481,7 @@
     z-index: 200;
   }
 
-  /* Install banner for iOS */
+  /* ── IOS BANNER ── */
   .ios-install-banner {
     position: fixed;
     top: 0;
@@ -437,22 +510,25 @@
     flex-shrink: 0;
   }
 
+  /* Hidden file input for import */
+  #importInput { display: none; }
+
   /* ── RESPONSIVE ── */
   @media (max-width: 860px) {
     body { padding: 10px; }
     .page {
       width: 100%;
-      padding: 24px 20px 20px;
+      padding: 20px 16px 16px;
       grid-template-columns: 1fr;
-      grid-template-rows: auto auto auto auto auto;
+      grid-template-rows: auto auto auto auto auto auto;
     }
-    .header { flex-direction: column; align-items: flex-start; gap: 8px; }
-    .month-input-wrap { align-self: stretch; }
-    .month-input { width: 100%; text-align: left; }
+    .header { flex-direction: column; align-items: flex-start; gap: 6px; }
+    .month-nav-wrap { align-self: stretch; justify-content: center; }
+    .stats-panel { flex-wrap: wrap; gap: 8px 16px; }
     .habits-col { grid-column: 1; padding-right: 0; }
-    .chart-col { grid-column: 1; padding: 16px 0; }
-    #habit-chart { max-width: 280px; }
-    .right-col { grid-column: 1; padding-left: 0; border-left: none; border-top: 1px solid var(--ring); padding-top: 16px; }
+    .chart-col { grid-column: 1; padding: 12px 0; }
+    #habit-chart { max-width: 260px; }
+    .right-col { grid-column: 1; padding-left: 0; border-left: none; border-top: 1px solid var(--ring); padding-top: 12px; }
     .actions {
       position: fixed;
       bottom: 0;
@@ -460,28 +536,28 @@
       right: 0;
       flex-wrap: wrap;
       justify-content: center;
-      padding: 10px;
+      padding: 8px;
       background: rgba(44,44,44,0.95);
-      gap: 6px;
+      gap: 5px;
       border-top: 1px solid rgba(255,255,255,0.1);
     }
-    .btn { font-size: 11px; padding: 8px 12px; }
-    .toast { bottom: 80px; }
+    .btn { font-size: 10px; padding: 7px 10px; }
+    .toast { bottom: 72px; }
     .quote-text { max-width: 70%; }
   }
 
   @media (max-width: 400px) {
-    .title-planning { font-size: 28px; }
-    #habit-chart { max-width: 220px; }
+    .title-planning { font-size: 26px; }
+    #habit-chart { max-width: 200px; }
     .goals-grid { grid-template-columns: 1fr; }
-    .footer { flex-direction: column; gap: 6px; align-items: flex-start; }
+    .footer { flex-direction: column; gap: 4px; align-items: flex-start; }
     .quote-text { max-width: 100%; }
   }
 
   @media print {
     body { background: white; padding: 0; }
     .page { box-shadow: none; width: 100%; }
-    .actions, .tooltip, .toast, .ios-install-banner { display: none !important; }
+    .actions, .tooltip, .toast, .ios-install-banner, .stats-panel { display: none !important; }
   }
 </style>
 </head>
@@ -497,11 +573,16 @@
         <div class="title-planning">Planning</div>
       </div>
     </div>
-    <div class="month-input-wrap">
-      <span class="month-label">Month / Year</span>
-      <input class="month-input" id="monthYear" type="text" placeholder="June 2026">
+    <div class="month-nav-wrap">
+      <button class="month-nav-btn" id="monthPrev" title="Previous month">◀</button>
+      <span class="month-display" id="monthDisplay" title="Click to edit"></span>
+      <input class="month-input-edit" id="monthEdit" type="text" maxlength="30">
+      <button class="month-nav-btn" id="monthNext" title="Next month">▶</button>
     </div>
   </div>
+
+  <!-- STATS PANEL -->
+  <div class="stats-panel" id="statsPanel"></div>
 
   <!-- LEFT: Habits -->
   <div class="habits-col">
@@ -521,17 +602,16 @@
       </div>
     </div>
 
-    <div class="instructions">
-      Tap a cell to cycle:<br>
-      empty → done → missed → empty<br><br>
-      Each ring = one habit.<br>
-      Each arc segment = one day.
+    <div class="how-to">
+      Tap an arc to cycle: — → ✓ → ✗ → —<br>
+      Each ring = one habit · Each arc = one day
     </div>
   </div>
 
   <!-- CENTRE: Radial chart -->
   <div class="chart-col">
     <svg id="habit-chart" width="300" height="300" viewBox="-150 -150 300 300"></svg>
+    <div class="chart-streak-summary" id="chartStreaks"></div>
   </div>
 
   <!-- RIGHT: Observations + Goals -->
@@ -579,9 +659,14 @@
   <button class="btn-close-banner" onclick="dismissIOSBanner()">✕</button>
 </div>
 
+<!-- Hidden file input -->
+<input type="file" id="importInput" accept=".json">
+
 <!-- Action buttons -->
 <div class="actions" id="actions">
   <button class="btn btn-install" id="installBtn" style="display:none" onclick="installApp()">📲 Install App</button>
+  <button class="btn btn-export" onclick="exportData()">📤 Export</button>
+  <button class="btn btn-import" onclick="document.getElementById('importInput').click()">📥 Import</button>
   <button class="btn btn-clear" onclick="clearAll()">Clear</button>
   <button class="btn btn-reset" onclick="resetAll()">Reset</button>
   <button class="btn btn-print" onclick="window.print()">Print</button>
@@ -603,62 +688,355 @@ const HABIT_NAMES_DEFAULT = [
   'No Smoke','Jogging','Trotar','Drink 2L water','','','',''
 ];
 
-const STORAGE_KEY = 'habit-tracker-state';
+const STORAGE_KEY = 'habit-tracker-state-v2';
 
-// ── STATE ───────────────────────────────────────────────────────────────
+// ── DATA MODEL ──────────────────────────────────────────────────────────
+// v2 shape:
+// {
+//   version: 2,
+//   currentMonth: "June 2026",
+//   habitNames: [...],
+//   months: {
+//     "June 2026": { state: [[...]], obsTexts: [...], goalTexts: [...] },
+//     ...
+//   }
+// }
+
+let currentMonth = '';
+let habitNames   = [...HABIT_NAMES_DEFAULT];
+
+// Current month's data (loaded/saved per month)
 let state;
-let habitNames;
 let obsTexts  = ['', '', '', '', ''];
 let goalTexts = ['', '', '', '', ''];
+
+// Master store (in-memory cache of all months, populated from localStorage)
+let monthStore = {};
 
 function freshState() {
   return Array.from({length: HABITS}, () => new Array(DAYS).fill(0));
 }
 
-// ── LOCALSTORAGE ────────────────────────────────────────────────────────
-function saveState() {
-  try {
-    const data = {
-      state,
-      habitNames,
-      obsTexts,
-      goalTexts,
-      monthYear: document.getElementById('monthYear').value
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch (e) { /* storage full or unavailable — ignore silently */ }
+function getMonthKey(m) {
+  return m || currentMonth;
 }
 
-function loadState() {
+function getDateLabel() {
+  const d = new Date();
+  return d.toLocaleDateString('en-AU', { month: 'long', year: 'numeric' });
+}
+
+// ── LOCALSTORAGE ────────────────────────────────────────────────────────
+function saveAll() {
+  try {
+    // Save current month's data into the store
+    if (currentMonth) {
+      monthStore[currentMonth] = {
+        state, obsTexts: [...obsTexts], goalTexts: [...goalTexts]
+      };
+    }
+    const data = {
+      version: 2,
+      currentMonth,
+      habitNames,
+      months: monthStore
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch (e) { /* ignore */ }
+}
+
+function loadMonthData(monthKey) {
+  const md = monthStore[monthKey];
+  if (md && md.state && md.state.length === HABITS && md.state[0].length === DAYS) {
+    state = md.state;
+    obsTexts = md.obsTexts ? [...md.obsTexts] : ['', '', '', '', ''];
+    goalTexts = md.goalTexts ? [...md.goalTexts] : ['', '', '', '', ''];
+  } else {
+    state = freshState();
+    obsTexts = ['', '', '', '', ''];
+    goalTexts = ['', '', '', '', ''];
+  }
+}
+
+function loadAll() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return false;
+    if (!raw) {
+      // Try old v1 format for migration
+      return migrateV1();
+    }
     const data = JSON.parse(raw);
-    // Validate & restore state
-    if (data.state && data.state.length === HABITS && data.state[0].length === DAYS) {
-      state = data.state;
+
+    if (data.version === 2) {
+      currentMonth = data.currentMonth || getDateLabel();
+      habitNames = data.habitNames && data.habitNames.length === HABITS
+        ? data.habitNames : [...HABIT_NAMES_DEFAULT];
+      monthStore = data.months || {};
+      loadMonthData(currentMonth);
+      return true;
     }
-    if (data.habitNames && data.habitNames.length === HABITS) {
-      habitNames = data.habitNames;
-    }
-    if (data.obsTexts) obsTexts = data.obsTexts;
-    if (data.goalTexts) goalTexts = data.goalTexts;
-    if (data.monthYear) document.getElementById('monthYear').value = data.monthYear;
+    return false;
+  } catch (e) {
+    return false;
+  }
+}
+
+// ── V1 → V2 MIGRATION ───────────────────────────────────────────────────
+function migrateV1() {
+  const oldKey = 'habit-tracker-state'; // from v1
+  try {
+    const raw = localStorage.getItem(oldKey);
+    if (!raw) return false;
+
+    const old = JSON.parse(raw);
+    if (!old.state || !old.monthYear) return false;
+
+    const monthKey = old.monthYear;
+    currentMonth = monthKey;
+    habitNames = old.habitNames && old.habitNames.length === HABITS
+      ? old.habitNames : [...HABIT_NAMES_DEFAULT];
+
+    monthStore = {};
+    monthStore[monthKey] = {
+      state: old.state,
+      obsTexts: old.obsTexts || ['', '', '', '', ''],
+      goalTexts: old.goalTexts || ['', '', '', '', '']
+    };
+
+    state = old.state;
+    obsTexts = [...(monthStore[monthKey].obsTexts)];
+    goalTexts = [...(monthStore[monthKey].goalTexts)];
+
+    // Remove old data, save new
+    localStorage.removeItem(oldKey);
+    saveAll();
     return true;
   } catch (e) {
     return false;
   }
 }
 
-// ── TOAST ────────────────────────────────────────────────────────────────
-let toastTimer;
+// ── MONTH NAVIGATION ────────────────────────────────────────────────────
+const monthDisplay = document.getElementById('monthDisplay');
+const monthEdit    = document.getElementById('monthEdit');
+const monthPrev    = document.getElementById('monthPrev');
+const monthNext    = document.getElementById('monthNext');
 
-function showToast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2000);
+function parseMonth(str) {
+  const months = ['January','February','March','April','May','June',
+                  'July','August','September','October','November','December'];
+  const m = months.findIndex(m => str.toLowerCase().includes(m.toLowerCase()));
+  if (m === -1) return null;
+  const yr = str.match(/\d{4}/);
+  if (!yr) return null;
+  return { month: m, year: parseInt(yr[0]) };
+}
+
+function formatMonth(m, y) {
+  const months = ['January','February','March','April','May','June',
+                  'July','August','September','October','November','December'];
+  return `${months[m]} ${y}`;
+}
+
+function switchToMonth(key) {
+  // Save current month first
+  if (currentMonth) {
+    monthStore[currentMonth] = {
+      state, obsTexts: [...obsTexts], goalTexts: [...goalTexts]
+    };
+  }
+
+  currentMonth = key;
+  if (!monthStore[currentMonth]) {
+    // New month: fresh state, copy habit names
+    state = freshState();
+    obsTexts = ['', '', '', '', ''];
+    goalTexts = ['', '', '', '', ''];
+    monthStore[currentMonth] = { state, obsTexts: [...obsTexts], goalTexts: [...goalTexts] };
+  } else {
+    loadMonthData(currentMonth);
+  }
+
+  updateUI();
+  saveAll();
+}
+
+function navigateMonth(delta) {
+  const parsed = parseMonth(currentMonth);
+  if (!parsed) return;
+  let m = parsed.month + delta;
+  let y = parsed.year;
+  if (m < 0)  { m = 11; y--; }
+  if (m > 11) { m = 0;  y++; }
+  switchToMonth(formatMonth(m, y));
+}
+
+monthPrev.addEventListener('click', () => navigateMonth(-1));
+monthNext.addEventListener('click', () => navigateMonth(1));
+
+// Click month display to edit
+monthDisplay.addEventListener('click', () => {
+  monthDisplay.style.display = 'none';
+  monthEdit.value = currentMonth;
+  monthEdit.style.display = 'inline-block';
+  monthEdit.focus();
+  monthEdit.select();
+});
+
+monthEdit.addEventListener('blur', () => finishMonthEdit());
+monthEdit.addEventListener('keydown', e => {
+  if (e.key === 'Enter') { finishMonthEdit(); }
+  if (e.key === 'Escape') { cancelMonthEdit(); }
+});
+
+function finishMonthEdit() {
+  const val = monthEdit.value.trim();
+  if (val && val !== currentMonth) {
+    // Check if it has a recognizable month + year
+    if (parseMonth(val)) {
+      switchToMonth(val);
+    } else {
+      showToast('Enter a month name with year, e.g. "June 2026"');
+      // Refocus for correction
+      setTimeout(() => { monthEdit.focus(); monthEdit.select(); }, 100);
+      return;
+    }
+  }
+  cancelMonthEdit();
+}
+
+function cancelMonthEdit() {
+  monthEdit.style.display = 'none';
+  monthDisplay.style.display = 'inline';
+}
+
+// ── STATS CALCULATION ───────────────────────────────────────────────────
+function calcStreaks(habitData) {
+  let current = 0, best = 0, run = 0;
+  for (let d = 0; d < DAYS; d++) {
+    if (habitData[d] === 1) {
+      run++;
+      if (run > best) best = run;
+    } else {
+      run = 0;
+    }
+  }
+  // Current streak: count backwards from last day
+  current = 0;
+  for (let d = DAYS - 1; d >= 0; d--) {
+    if (habitData[d] === 1) current++;
+    else break;
+  }
+  return { current, best };
+}
+
+function calcStats() {
+  let totalDone = 0, totalMissed = 0, totalEmpty = 0;
+  const habitStats = [];
+
+  for (let h = 0; h < HABITS; h++) {
+    let done = 0, missed = 0;
+    for (let d = 0; d < DAYS; d++) {
+      if (state[h][d] === 1) done++;
+      else if (state[h][d] === 2) missed++;
+    }
+    totalDone += done;
+    totalMissed += missed;
+    totalEmpty += (DAYS - done - missed);
+
+    const streaks = calcStreaks(state[h]);
+    habitStats.push({
+      name: habitNames[h] || `Habit ${h+1}`,
+      done, missed, total: DAYS,
+      pct: Math.round(done / DAYS * 100),
+      streaks,
+      color: HABIT_COLORS[h]
+    });
+  }
+
+  const overallPct = totalDone + totalMissed > 0
+    ? Math.round(totalDone / (totalDone + totalMissed + totalEmpty) * 100)
+    : 0;
+
+  // Best habit (highest done count, tie-break by name)
+  const sorted = [...habitStats].sort((a, b) => b.done - a.done || a.name.localeCompare(b.name));
+  const bestHabit = sorted[0];
+  const needsLove = [...habitStats].sort((a, b) => a.done - b.done || a.name.localeCompare(b.name))[0];
+
+  return { overallPct, totalDone, totalMissed, totalEmpty, habitStats, bestHabit, needsLove };
+}
+
+// ── RENDER STATS ────────────────────────────────────────────────────────
+function renderStats() {
+  const panel = document.getElementById('statsPanel');
+  const stats = calcStats();
+  const totalTracked = stats.totalDone + stats.totalMissed;
+
+  if (totalTracked === 0) {
+    panel.innerHTML = '';
+    return;
+  }
+
+  panel.innerHTML = `
+    <span class="stat-item">
+      <span class="stat-icon">📊</span>
+      <span class="stat-value ${stats.overallPct >= 50 ? 'green' : 'red'}">${stats.overallPct}%</span>
+      overall
+    </span>
+    <span class="stat-break">·</span>
+    <span class="stat-item">
+      <span>🔥</span>
+      <span class="stat-value green">${stats.bestHabit.done}/${DAYS}</span>
+      <span class="stat-habit-dot" style="background:${stats.bestHabit.color}"></span>
+      ${stats.bestHabit.name}
+      ${stats.bestHabit.streaks.current > 2 ? `· ${stats.bestHabit.streaks.current}day streak` : ''}
+    </span>
+    <span class="stat-break">·</span>
+    <span class="stat-item">
+      <span>💪</span>
+      <span class="stat-value">${stats.needsLove.done}/${DAYS}</span>
+      <span class="stat-habit-dot" style="background:${stats.needsLove.color}"></span>
+      ${stats.needsLove.name}
+    </span>
+  `;
+}
+
+// ── RENDER HABIT STREAKS (in left column) ───────────────────────────────
+function renderHabitStreaks() {
+  document.querySelectorAll('.habit-streak-badge').forEach(el => el.remove());
+  const items = document.querySelectorAll('.habit-item');
+  items.forEach((item, h) => {
+    const streaks = calcStreaks(state[h]);
+    if (streaks.current > 2 || streaks.best > 3) {
+      const badge = document.createElement('span');
+      badge.className = 'habit-streak-badge';
+      if (streaks.current > 2) {
+        badge.textContent = `🔥${streaks.current}`;
+      } else {
+        badge.textContent = `🏆${streaks.best}`;
+      }
+      item.appendChild(badge);
+    }
+  });
+}
+
+// ── RENDER CHART STREAKS (below chart) ──────────────────────────────────
+function renderChartStreaks() {
+  const el = document.getElementById('chartStreaks');
+  const stats = calcStats();
+  const topStreaks = stats.habitStats
+    .filter(s => s.streaks.best >= 3)
+    .sort((a, b) => b.streaks.best - a.streaks.best)
+    .slice(0, 3);
+
+  if (topStreaks.length === 0) { el.innerHTML = ''; return; }
+
+  el.innerHTML = topStreaks.map(s => `
+    <span>
+      <span class="stat-habit-dot" style="background:${s.color}"></span>
+      ${s.name}: <strong>${s.streaks.best}${s.streaks.current === s.streaks.best ? '🔥' : ''}</strong>
+    </span>
+  `).join('');
 }
 
 // ── BUILD HABIT LIST ────────────────────────────────────────────────────
@@ -687,7 +1065,7 @@ function escapeHtml(s) {
 listEl.addEventListener('input', e => {
   if (e.target.dataset.h !== undefined) {
     habitNames[+e.target.dataset.h] = e.target.value;
-    saveState();
+    saveAll();
   }
 });
 
@@ -697,7 +1075,7 @@ document.querySelectorAll('.obs-line').forEach(el => {
   el.value = obsTexts[idx] || '';
   el.addEventListener('input', () => {
     obsTexts[idx] = el.value;
-    saveState();
+    saveAll();
   });
 });
 
@@ -706,7 +1084,7 @@ document.querySelectorAll('.goal-input').forEach(el => {
   el.value = goalTexts[idx] || '';
   el.addEventListener('input', () => {
     goalTexts[idx] = el.value;
-    saveState();
+    saveAll();
   });
 });
 
@@ -828,7 +1206,8 @@ svg.addEventListener('click', e => {
   const h = +path.dataset.h, d = +path.dataset.d;
   state[h][d] = (state[h][d] + 1) % 3;
   path.setAttribute('fill', cellColor(h, d));
-  saveState();
+  saveAll();
+  updateStatsUI();
   showTooltip(e, h, d);
 });
 
@@ -843,41 +1222,164 @@ svg.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
 function showTooltip(e, h, d) {
   const stateLbl = ['—', '✓ Done', '✗ Missed'][state[h][d]];
   const name = habitNames[h] || `Habit ${h+1}`;
-  tooltip.textContent = `Day ${d+1} · ${name} · ${stateLbl}`;
+  const streaks = calcStreaks(state[h]);
+  let extra = '';
+  if (streaks.current > 1) extra = ` · 🔥${streaks.current} streak`;
+  else if (streaks.best > 1) extra = ` · Best: ${streaks.best}`;
+  tooltip.textContent = `Day ${d+1} · ${name} · ${stateLbl}${extra}`;
   tooltip.style.display = 'block';
   tooltip.style.left = (e.clientX + 12) + 'px';
   tooltip.style.top  = (e.clientY - 28) + 'px';
 }
 
 // ── MONTH INPUT ─────────────────────────────────────────────────────────
-document.getElementById('monthYear').addEventListener('input', saveState);
+document.getElementById('monthYear').addEventListener('input', saveAll);
+
+// ── UPDATE UI ───────────────────────────────────────────────────────────
+function updateUI() {
+  monthDisplay.textContent = currentMonth;
+  monthDisplay.style.display = 'inline';
+  monthEdit.style.display = 'none';
+
+  // Refresh observations and goals from the loaded data
+  document.querySelectorAll('.obs-line').forEach(el => {
+    const idx = +el.dataset.obs;
+    el.value = obsTexts[idx] || '';
+  });
+  document.querySelectorAll('.goal-input').forEach(el => {
+    const idx = +el.dataset.goal;
+    el.value = goalTexts[idx] || '';
+  });
+
+  drawChart();
+  updateStatsUI();
+}
+
+function updateStatsUI() {
+  renderStats();
+  renderHabitStreaks();
+  renderChartStreaks();
+}
 
 // ── RESET / CLEAR ───────────────────────────────────────────────────────
 function resetAll() {
-  if (!confirm('Reset all tracked days for this month? (Observations and goals will be kept)')) return;
+  if (!confirm('Reset all tracked days for this month? (Observations, goals, and habits will be kept)')) return;
   state = freshState();
+  monthStore[currentMonth] = { state, obsTexts: [...obsTexts], goalTexts: [...goalTexts] };
   drawChart();
-  saveState();
+  updateStatsUI();
+  saveAll();
   showToast('Days reset');
 }
 
 function clearAll() {
-  if (!confirm('Clear ALL data including habits, observations, and goals?')) return;
+  if (!confirm('Clear ALL data for ALL months (habits, observations, goals)?')) return;
+  monthStore = {};
   state = freshState();
   habitNames = [...HABIT_NAMES_DEFAULT];
   obsTexts  = ['', '', '', '', ''];
   goalTexts = ['', '', '', '', ''];
+  currentMonth = getDateLabel();
+  monthStore[currentMonth] = { state, obsTexts: [...obsTexts], goalTexts: [...goalTexts] };
   buildHabitsList();
   document.querySelectorAll('.obs-line').forEach(el => { el.value = ''; });
   document.querySelectorAll('.goal-input').forEach(el => { el.value = ''; });
-  document.getElementById('monthYear').value =
-    new Date().toLocaleDateString('en-AU', { month: 'long', year: 'numeric' });
-  drawChart();
-  saveState();
+  updateUI();
+  saveAll();
   showToast('All data cleared');
 }
 
-// ── INSTALL PROMPT (Android/PWA) ────────────────────────────────────────
+// ── EXPORT ──────────────────────────────────────────────────────────────
+function exportData() {
+  // Make sure current month is saved
+  if (currentMonth) {
+    monthStore[currentMonth] = {
+      state, obsTexts: [...obsTexts], goalTexts: [...goalTexts]
+    };
+  }
+
+  const exportObj = {
+    version: 2,
+    exportedAt: new Date().toISOString(),
+    currentMonth,
+    habitNames,
+    months: monthStore
+  };
+
+  const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const dateStr = new Date().toISOString().slice(0, 10);
+  a.href = url;
+  a.download = `habit-tracker-backup-${dateStr}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast(`Exported ${Object.keys(monthStore).length} month(s) 📤`);
+}
+
+// ── IMPORT ──────────────────────────────────────────────────────────────
+document.getElementById('importInput').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const data = JSON.parse(ev.target.result);
+
+      // Validate
+      if (!data.version || !data.months) {
+        showToast('Invalid backup file');
+        return;
+      }
+
+      const monthCount = Object.keys(data.months).length;
+
+      // Confirm
+      if (!confirm(`Import ${monthCount} month(s) of data? This will REPLACE all current data.`)) {
+        e.target.value = '';
+        return;
+      }
+
+      // Apply
+      monthStore = data.months;
+      habitNames = data.habitNames && data.habitNames.length === HABITS
+        ? data.habitNames : [...HABIT_NAMES_DEFAULT];
+      currentMonth = data.currentMonth || getDateLabel();
+
+      if (!monthStore[currentMonth]) {
+        // Switch to first available month
+        const keys = Object.keys(monthStore);
+        currentMonth = keys[0] || getDateLabel();
+      }
+
+      loadMonthData(currentMonth);
+      buildHabitsList();
+      updateUI();
+      saveAll();
+      showToast(`Imported ${monthCount} month(s) ✅`);
+    } catch (err) {
+      showToast('Error reading file');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
+// ── TOAST ────────────────────────────────────────────────────────────────
+let toastTimer;
+
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+// ── INSTALL PROMPT ──────────────────────────────────────────────────────
 let installPrompt = null;
 
 window.addEventListener('beforeinstallprompt', e => {
@@ -897,7 +1399,7 @@ function installApp() {
   });
 }
 
-// ── iOS install banner ──────────────────────────────────────────────────
+// ── iOS INSTALL BANNER ──────────────────────────────────────────────────
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 const isStandalone = window.navigator.standalone;
 const bannerDismissed = localStorage.getItem('ios-banner-dismissed');
@@ -911,7 +1413,7 @@ function dismissIOSBanner() {
   localStorage.setItem('ios-banner-dismissed', '1');
 }
 
-// ── SERVICE WORKER REGISTRATION ─────────────────────────────────────────
+// ── SERVICE WORKER ──────────────────────────────────────────────────────
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('sw.js').catch(() => {});
@@ -919,28 +1421,18 @@ if ('serviceWorker' in navigator) {
 }
 
 // ── INIT ────────────────────────────────────────────────────────────────
-// Try to load saved state; fall back to defaults
-state = freshState();
-habitNames = [...HABIT_NAMES_DEFAULT];
-
-if (!loadState()) {
-  // No saved data — fresh start with today's date
-  document.getElementById('monthYear').value =
-    new Date().toLocaleDateString('en-AU', { month: 'long', year: 'numeric' });
+// Try to load; fall back to fresh
+if (!loadAll()) {
+  currentMonth = getDateLabel();
+  habitNames = [...HABIT_NAMES_DEFAULT];
+  state = freshState();
+  obsTexts = ['', '', '', '', ''];
+  goalTexts = ['', '', '', '', ''];
+  monthStore[currentMonth] = { state, obsTexts: [...obsTexts], goalTexts: [...goalTexts] };
 }
 
 buildHabitsList();
-drawChart();
-
-// Re-save observations/goals month values from the loaded state
-document.querySelectorAll('.obs-line').forEach(el => {
-  const idx = +el.dataset.obs;
-  el.value = obsTexts[idx] || '';
-});
-document.querySelectorAll('.goal-input').forEach(el => {
-  const idx = +el.dataset.goal;
-  el.value = goalTexts[idx] || '';
-});
+updateUI();
 </script>
 </body>
 </html>
