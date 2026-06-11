@@ -635,6 +635,10 @@ function loadAll() {
   } catch(e){ return false; }
 }
 
+function getActiveHabits() {
+  return Math.max(1, habitNames.filter(n => n.trim()).length);
+}
+
 // ── MONTH NAVIGATION ──────────────────────────────────────────────────────
 const MONTH_NAMES = ['January','February','March','April','May','June',
                      'July','August','September','October','November','December'];
@@ -705,7 +709,8 @@ function calcStreaks(data) {
 
 function calcStats() {
   let totalDone=0,totalMissed=0,totalEmpty=0;
-  const habitStats = HABIT_COLORS.map((_,h)=>{
+  const active = getActiveHabits();
+  const habitStats = HABIT_COLORS.slice(0, active).map((_,h)=>{
     let done=0,missed=0;
     for(let d=0;d<DAYS;d++){if(state[h][d]===1)done++;else if(state[h][d]===2)missed++;}
     totalDone+=done; totalMissed+=missed; totalEmpty+=(DAYS-done-missed);
@@ -777,7 +782,10 @@ function buildHabitsList() {
 function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
 
 listEl.addEventListener('input', e=>{
-  if (e.target.dataset.h!==undefined){ habitNames[+e.target.dataset.h]=e.target.value; renderRingLegend(); saveAll(); }
+  if (e.target.dataset.h!==undefined){ 
+    habitNames[+e.target.dataset.h]=e.target.value; 
+    drawChart(); updateStatsUI(); saveAll(); 
+  }
 });
 document.querySelectorAll('.obs-line').forEach(el=>{
   el.addEventListener('input',()=>{ obsTexts[+el.dataset.obs]=el.value; saveAll(); });
@@ -803,6 +811,7 @@ function cellColor(h,d){ const v=state[h][d]; return v===1?HABIT_COLORS[h]:v===2
 
 function drawChart(){
   svg.innerHTML='';
+  const activeHabits = getActiveHabits();
 
   const bg=document.createElementNS(NS,'circle');
   bg.setAttribute('r',INNER-6); bg.setAttribute('fill','#f5f0e8'); svg.appendChild(bg);
@@ -817,7 +826,7 @@ function drawChart(){
   const todayIdx=new Date().getDate()-1;
   if (todayIdx<DAYS){
     const tr=deg2rad(START_DEG+(todayIdx+0.5)*DEG_PER_DAY);
-    const outerEdge=INNER+HABITS*(RING_W+GAP)+12;
+    const outerEdge=INNER+activeHabits*(RING_W+GAP)+12;
     const tick=document.createElementNS(NS,'line');
     tick.setAttribute('x1',(INNER-3)*Math.cos(tr)); tick.setAttribute('y1',(INNER-3)*Math.sin(tr));
     tick.setAttribute('x2',outerEdge*Math.cos(tr));  tick.setAttribute('y2',outerEdge*Math.sin(tr));
@@ -825,7 +834,7 @@ function drawChart(){
     tick.setAttribute('stroke-linecap','round'); svg.appendChild(tick);
   }
 
-  for (let h=0;h<HABITS;h++){
+  for (let h=0;h<activeHabits;h++){
     const r1=INNER+h*(RING_W+GAP), r2=r1+RING_W;
     cellPaths[h]=[];
     for (let d=0;d<DAYS;d++){
@@ -848,7 +857,7 @@ function drawChart(){
   }
 
   // Day labels
-  const outerEdge=INNER+HABITS*(RING_W+GAP)+8;
+  const outerEdge=INNER+activeHabits*(RING_W+GAP)+8;
   for (let d=0;d<DAYS;d++){
     if (d!==0 && d!==DAYS-1 && (d+1)%2!==0) continue;
     const ang=deg2rad(START_DEG+(d+0.5)*DEG_PER_DAY);
