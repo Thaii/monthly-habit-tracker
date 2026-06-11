@@ -924,7 +924,7 @@ function resetAll(){
 }
 function clearAll(){
   if (!confirm('Clear ALL data for ALL months?\nCannot be undone.')) return;
-  monthStore={}; state=freshState(); habitNames=[...HABIT_NAMES_DEFAULT];
+  monthStore={}; state=freshState(); habitNames=new Array(HABITS).fill('');
   obsTexts=freshObs(); goalTexts=freshGoals();
   currentMonth=getDateLabel(); monthStore[currentMonth]={state,obsTexts:[...obsTexts],goalTexts:[...goalTexts]};
   buildHabitsList();
