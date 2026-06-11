@@ -673,10 +673,6 @@
 </div>
 
 <script>
-// MARKER: START
-document.documentElement.dataset.scriptStatus = 'started';
-try { sessionStorage.setItem('__pos', 'start'); } catch(e) {}
-
 // ── CONFIG ──────────────────────────────────────────────────────────────
 const HABITS = 8;
 const DAYS   = 31;
@@ -1388,7 +1384,6 @@ function installApp() {
   });
 }
 
-try { sessionStorage.setItem('__pos', 'ios_banner'); } catch(e) {}
 // ── iOS INSTALL BANNER ──────────────────────────────────────────────────
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 const isStandalone = window.navigator.standalone;
@@ -1403,71 +1398,36 @@ function dismissIOSBanner() {
   localStorage.setItem('ios-banner-dismissed', '1');
 }
 
-try { sessionStorage.setItem('__pos', 'sw'); } catch(e) {}
 // ── SERVICE WORKER ──────────────────────────────────────────────────────
-// Force-clean any old service workers so users always get the latest page
 if ('serviceWorker' in navigator) {
-  // Unregister all existing service workers first
   navigator.serviceWorker.getRegistrations().then(regs => {
     for (let r of regs) { r.unregister(); }
   });
-  // Then register fresh
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').then(reg => {
-      // Auto-skip waiting so updates take effect immediately
-      if (reg.waiting) reg.waiting.postMessage({ action: 'skipWaiting' });
-      reg.addEventListener('updatefound', () => {
-        const w = reg.installing;
-        if (w) w.addEventListener('statechange', () => {
-          if (w.state === 'installed' && navigator.serviceWorker.controller) {
-            w.postMessage({ action: 'skipWaiting' });
-          }
-        });
-      });
-    }).catch(() => {});
-  });
-  // Reload when new SW takes over
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
-    window.location.reload();
+    navigator.serviceWorker.register('sw.js').catch(() => {});
   });
 }
 
-try { sessionStorage.setItem('__pos', 'before_init'); } catch(e) {}
-console.log('MARKER: BEFORE INIT');
 // ── INIT ────────────────────────────────────────────────────────────────
-console.log('INIT START');
 try {
-  console.log('loadAll result:', !loadAll());
   if (!loadAll()) {
-    console.log('Setting fresh state');
     currentMonth = getDateLabel();
     habitNames = [...HABIT_NAMES_DEFAULT];
     state = freshState();
     obsTexts = ['', '', '', '', ''];
     goalTexts = ['', '', '', '', ''];
     monthStore[currentMonth] = { state, obsTexts: [...obsTexts], goalTexts: [...goalTexts] };
-    console.log('Fresh state set, month:', currentMonth);
   }
-  if (!state) { console.log('state was falsy, creating fresh'); state = freshState(); }
-  if (!currentMonth) { console.log('month was falsy, setting'); currentMonth = getDateLabel(); }
-  console.log('Building habits list');
+  if (!state) state = freshState();
+  if (!currentMonth) currentMonth = getDateLabel();
   buildHabitsList();
-  console.log('Updating UI');
   updateUI();
-  console.log('INIT DONE');
-  try { sessionStorage.setItem('__pos', 'init_done'); } catch(e) {}
 } catch (e) {
-  try { sessionStorage.setItem('__pos', 'init_error_'+String(e.message).substring(0,30)); } catch(e2) {}
-  console.error('INIT ERROR:', e, e && e.message, e && e.stack);
-  try {
-    var errDiv = document.createElement('div');
-    errDiv.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#c0392b;color:white;padding:15px;z-index:9999;font-size:14px;font-family:sans-serif;white-space:pre-wrap';
-    errDiv.textContent = 'Error: ' + String(e && e.message ? e.message : e);
-    document.body.appendChild(errDiv);
-    try { sessionStorage.setItem('__pos', 'error_shown_'+String(e.message).substring(0,20)); } catch(e3) {}
-  } catch(e2) {
-    console.error('Error div failed:', e2);
-  }
+  console.error('Init error:', e);
+  var errDiv = document.createElement('div');
+  errDiv.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#c0392b;color:white;padding:15px;z-index:9999;font-size:14px';
+  errDiv.textContent = 'Error: ' + String(e && e.message ? e.message : e);
+  document.body.appendChild(errDiv);
 }
 </script>
 </body>
