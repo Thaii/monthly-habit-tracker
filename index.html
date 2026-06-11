@@ -673,6 +673,10 @@
 </div>
 
 <script>
+// MARKER: START
+document.documentElement.dataset.scriptStatus = 'started';
+console.log('MARKER: SCRIPT STARTED');
+
 // ── CONFIG ──────────────────────────────────────────────────────────────
 const HABITS = 8;
 const DAYS   = 31;
@@ -1426,6 +1430,7 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+console.log('MARKER: BEFORE INIT');
 // ── INIT ────────────────────────────────────────────────────────────────
 console.log('INIT START');
 try {
