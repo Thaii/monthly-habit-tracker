@@ -688,7 +688,7 @@ const HABIT_NAMES_DEFAULT = [
   'No Smoke','Jogging','Trotar','Drink 2L water','','','',''
 ];
 
-const STORAGE_KEY = 'habit-tracker-state-v2';
+const STORAGE_KEY = 'habit-tracker-state';
 
 // ── DATA MODEL ──────────────────────────────────────────────────────────
 // v2 shape:
@@ -761,12 +761,11 @@ function loadMonthData(monthKey) {
 function loadAll() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      // Try old v1 format for migration
-      return migrateV1();
-    }
+    if (!raw) return false;
+
     const data = JSON.parse(raw);
 
+    // v2 format (current): has version field
     if (data.version === 2) {
       currentMonth = data.currentMonth || getDateLabel();
       habitNames = data.habitNames && data.habitNames.length === HABITS
@@ -775,42 +774,28 @@ function loadAll() {
       loadMonthData(currentMonth);
       return true;
     }
+
+    // v1 format (original): has state + monthYear
+    if (data.state && data.monthYear) {
+      const monthKey = data.monthYear;
+      currentMonth = monthKey;
+      habitNames = data.habitNames && data.habitNames.length === HABITS
+        ? data.habitNames : [...HABIT_NAMES_DEFAULT];
+      monthStore = {};
+      monthStore[monthKey] = {
+        state: data.state,
+        obsTexts: data.obsTexts || ['', '', '', '', ''],
+        goalTexts: data.goalTexts || ['', '', '', '', '']
+      };
+      state = data.state;
+      obsTexts = [...(monthStore[monthKey].obsTexts)];
+      goalTexts = [...(monthStore[monthKey].goalTexts)];
+      // Re-save in v2 format
+      saveAll();
+      return true;
+    }
+
     return false;
-  } catch (e) {
-    return false;
-  }
-}
-
-// ── V1 → V2 MIGRATION ───────────────────────────────────────────────────
-function migrateV1() {
-  const oldKey = 'habit-tracker-state'; // from v1
-  try {
-    const raw = localStorage.getItem(oldKey);
-    if (!raw) return false;
-
-    const old = JSON.parse(raw);
-    if (!old.state || !old.monthYear) return false;
-
-    const monthKey = old.monthYear;
-    currentMonth = monthKey;
-    habitNames = old.habitNames && old.habitNames.length === HABITS
-      ? old.habitNames : [...HABIT_NAMES_DEFAULT];
-
-    monthStore = {};
-    monthStore[monthKey] = {
-      state: old.state,
-      obsTexts: old.obsTexts || ['', '', '', '', ''],
-      goalTexts: old.goalTexts || ['', '', '', '', '']
-    };
-
-    state = old.state;
-    obsTexts = [...(monthStore[monthKey].obsTexts)];
-    goalTexts = [...(monthStore[monthKey].goalTexts)];
-
-    // Remove old data, save new
-    localStorage.removeItem(oldKey);
-    saveAll();
-    return true;
   } catch (e) {
     return false;
   }
